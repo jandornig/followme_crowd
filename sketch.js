@@ -24,7 +24,7 @@ function setup() {
 
 function draw(){
     background(200);
-    var newR = floor(map(floor(dist(mouseX,mouseY, pmouseX,pmouseY)),0,200,6,60))
+    var newR = floor(map(dist(mouseX,mouseY, pmouseX,pmouseY),0,200,6,60))
     
 
     for( var i=0; i<count; i++ ) {
