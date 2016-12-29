@@ -24,8 +24,7 @@ function setup() {
 
 function draw(){
     background(200);
-    var newR = floor(map(dist(mouseX,mouseY, pmouseX,pmouseY),0,200,6,60))
-    
+    var alertness = map(dist(mouseX,mouseY, pmouseX,pmouseY),0,200,0,100)
 
     for( var i=0; i<count; i++ ) {
 
@@ -44,10 +43,20 @@ function draw(){
         pop();*/
 
         // update and draw the vehicle at index i
+
+        // alter general alertness by distance of mouse to vehicle
+
+        var factor = 1-(dist( v[i].position.x, v[i].position.y, mouseX, mouseY )/200);
+
+        if( factor < 0 ) factor = 0;
+        if( factor > 1 ) factor = 1;
+
+        var vAlertness = alertness * factor;
+
         v[i].seek(t[i]);
         v[i].update();
         v[i].draw();
-        v[i].r = newR
+        v[i].addAlertness( vAlertness );
     }
 }
 
@@ -63,24 +72,40 @@ var Vehicle = function(x,y,color){
     // It means all those variable are instance vars of the 
     // Vehicle class. Every vehicle has its own set of those
     // variables.
+    this.alertness = 0;
     this.color = color;
     this.acceleration = new p5.Vector(0,0)
     this.velocity = new p5.Vector(0,-1)
     this.position = new p5.Vector(x,y)
-    this.r=3
-    this.maxspeed = 2
-    this.maxforce = 0.5
-}
+    this.r=5
+    this.maxspeed = 0.8
+    this.maxforce = 0.2
+    this.maxAlertness = 100;
+  }
 
 Vehicle.prototype.update=function(){
     this.velocity.add(this.acceleration)
     this.velocity.limit(this.maxspeed)
     this.position.add(this.velocity)
     this.acceleration.mult(0)
+
+    // decrease allertness. 
+    // if you multiply by percentage you will not have to check if its negative
+    this.alertness -= this.alertness*0.1;
+
+    // limit alertness
+    if( this.alertness > this.maxAlertness ) {
+        this.alertness = this.maxAlertness;
+    }
+
 }
 
 Vehicle.prototype.applyForce=function(force) {
     this.acceleration.add(force);
+}
+
+Vehicle.prototype.addAlertness = function(a) {
+    this.alertness += a;
 }
 
 Vehicle.prototype.seek=function(target){
@@ -103,9 +128,11 @@ Vehicle.prototype.draw=function(){
   
     rotate( this.velocity.heading() + Math.PI*0.5);
     
-    ellipse(0, -this.r*2, 20,20)
-    ellipse(-this.r*2, this.r*2, 20,20)
-    ellipse(this.r*2, this.r*2, 20,20)
+    var radius = this.r + this.alertness
+
+    ellipse(0, -radius*2, 20,20)
+    ellipse(-radius*2, radius*2, 20,20)
+    ellipse(radius*2, radius*2, 20,20)
     
     pop()
 }
