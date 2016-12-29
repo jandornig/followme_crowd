@@ -1,10 +1,13 @@
 var v; // all vehicles
 var t; // all targets
+var mm;
 var count = 20;
 
 function setup() {
     createCanvas(600,600)
     frameRate(30)
+    
+    mm = new MouseMarker( mouseX, mouseY );
     
     v = []; // initialise empty vehicles array
     t = []; // initialise empty targets array
@@ -29,7 +32,10 @@ function draw(){
     var alertness = map(dist(mouseX,mouseY, pmouseX,pmouseY),0,200,0,100)
     background(50+alertness*2);
     
-    disturber(alertness)
+    mm.setPosition( mouseX, mouseY );
+    mm.addAlertness( alertness );
+    mm.update();
+    mm.draw();
   
 
     for( var i=0; i<count; i++ ) {
@@ -154,16 +160,48 @@ Vehicle.prototype.draw=function(){
 
 /* end of Vehicle class */
 
-function disturber(inf){
-distSize = inf
-  
+var MouseMarker = function(x,y) {
+    this.position = new p5.Vector(x,y);
+    this.targetPosition = new p5.Vector(x,y);
+    this.alertness = 0;
+    this.r = 10;
+    this.maxAlertness = 60;
+}
+MouseMarker.prototype.setPosition = function( x, y ) {
+    this.targetPosition.x = x;
+    this.targetPosition.y = y;
+}
+
+MouseMarker.prototype.addAlertness = function(a) {
+    this.alertness += a;
+}
+
+
+MouseMarker.prototype.update = function() {
+
+    this.position.x = this.position.x + (this.targetPosition.x - this.position.x)*0.25;
+    this.position.y = this.position.y + (this.targetPosition.y - this.position.y)*0.25;
+
+    this.alertness -= this.alertness*0.5;
+
+    // limit alertness
+    if( this.alertness > this.maxAlertness ) {
+        this.alertness = this.maxAlertness;
+    }
+}
+
+MouseMarker.prototype.draw = function() {
     push()
     noStroke()
-    fill(255,(distSize*10)+50)
-    ellipse(mouseX,mouseY,(distSize*2)+10,(distSize*2)+10)
-    ellipse(mouseX,mouseY,(distSize*4)+30,(distSize*4)+30)
-    ellipse(mouseX,mouseY,(distSize*8)+50,(distSize*8)+50)
+    fill(255,(this.alertness*10)+50)
+
+    var a = this.alertness * 1;
+
+    ellipse(this.position.x,this.position.y,(a*2)+10,(a*2)+10)
+    ellipse(this.position.x,this.position.y,(a*4)+30,(a*4)+30)
+    ellipse(this.position.x,this.position.y,(a*8)+50,(a*8)+50)
     pop()
+
 }
 
 
