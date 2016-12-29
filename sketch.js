@@ -4,6 +4,8 @@ var count = 20;
 
 function setup() {
     createCanvas(600,600)
+    frameRate(30)
+    
     v = []; // initialise empty vehicles array
     t = []; // initialise empty targets array
     for( var i=0; i<count; i++ ) {
@@ -12,7 +14,7 @@ function setup() {
         v.push( 
             new Vehicle( 
                 floor(random(width)),floor(random(height)), 
-                color( floor(random(255)),floor(random(255)),floor(random(255)) ) 
+                color( floor(random(255))+50,floor(random(255)) ) 
             ) 
         );
 
@@ -23,8 +25,17 @@ function setup() {
 }
 
 function draw(){
-    background(200);
+    
     var alertness = map(dist(mouseX,mouseY, pmouseX,pmouseY),0,200,0,100)
+    background(50+alertness*2);
+    
+    push()
+    noStroke()
+    fill(255,(alertness*10)+50)
+    ellipse(mouseX,mouseY,(alertness*2),(alertness*2))
+    ellipse(mouseX,mouseY,(alertness*4)+30,(alertness*4)+30)
+    ellipse(mouseX,mouseY,(alertness*8)+50,(alertness*8)+50)
+    pop()
 
     for( var i=0; i<count; i++ ) {
 
@@ -80,7 +91,7 @@ var Vehicle = function(x,y,color){
     this.r=5
     this.maxspeed = 0.8
     this.maxforce = 0.2
-    this.maxAlertness = 100;
+    this.maxAlertness = 60;
   }
 
 Vehicle.prototype.update=function(){
@@ -91,7 +102,7 @@ Vehicle.prototype.update=function(){
 
     // decrease allertness. 
     // if you multiply by percentage you will not have to check if its negative
-    this.alertness -= this.alertness*0.1;
+    this.alertness -= this.alertness*0.05;
 
     // limit alertness
     if( this.alertness > this.maxAlertness ) {
