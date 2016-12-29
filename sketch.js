@@ -29,13 +29,8 @@ function draw(){
     var alertness = map(dist(mouseX,mouseY, pmouseX,pmouseY),0,200,0,100)
     background(50+alertness*2);
     
-    push()
-    noStroke()
-    fill(255,(alertness*10)+50)
-    ellipse(mouseX,mouseY,(alertness*2),(alertness*2))
-    ellipse(mouseX,mouseY,(alertness*4)+30,(alertness*4)+30)
-    ellipse(mouseX,mouseY,(alertness*8)+50,(alertness*8)+50)
-    pop()
+    disturber(alertness)
+  
 
     for( var i=0; i<count; i++ ) {
 
@@ -132,25 +127,44 @@ Vehicle.prototype.seek=function(target){
 
 Vehicle.prototype.draw=function(){
     push()
-    fill(this.color)
+    
+   
+    translate(this.position.x,this.position.y)
+    var radius = this.r + this.alertness
+    
+    
+  
     stroke(0)
     strokeWeight(0)
-    translate(this.position.x,this.position.y)
-  
     rotate( this.velocity.heading() + Math.PI*0.5);
     
-    var radius = this.r + this.alertness
-
+    fill(this.color)
     ellipse(0, -radius*2, 20,20)
     ellipse(-radius*2, radius*2, 20,20)
     ellipse(radius*2, radius*2, 20,20)
     
+    stroke(255,255-radius*20)
+    strokeWeight(1)
+    noFill()
+    ellipse(0,0,radius*5,radius*5)
+    
     pop()
+    
 }
 
 /* end of Vehicle class */
 
-
+function disturber(inf){
+distSize = inf
+  
+    push()
+    noStroke()
+    fill(255,(distSize*10)+50)
+    ellipse(mouseX,mouseY,(distSize*2)+10,(distSize*2)+10)
+    ellipse(mouseX,mouseY,(distSize*4)+30,(distSize*4)+30)
+    ellipse(mouseX,mouseY,(distSize*8)+50,(distSize*8)+50)
+    pop()
+}
 
 
 
