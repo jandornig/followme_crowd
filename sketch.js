@@ -24,8 +24,8 @@ function setup() {
 
 function draw(){
     background(200);
-    //var mouse = new createVector(mouseX,mouseY)
-
+    var newR = floor(map(floor(dist(mouseX,mouseY, pmouseX,pmouseY)),0,200,6,60))
+    
 
     for( var i=0; i<count; i++ ) {
 
@@ -36,17 +36,18 @@ function draw(){
         }
 
         // draw target for vehicle at index i
-        push();
+        /*push();
         fill(v[i].color);
         stroke(0);
         strokeWeight(0);
         ellipse(t[i].x,t[i].y, 20,20);
-        pop();
+        pop();*/
 
         // update and draw the vehicle at index i
         v[i].seek(t[i]);
         v[i].update();
         v[i].draw();
+        v[i].r = newR
     }
 }
 
@@ -66,9 +67,9 @@ var Vehicle = function(x,y,color){
     this.acceleration = new p5.Vector(0,0)
     this.velocity = new p5.Vector(0,-1)
     this.position = new p5.Vector(x,y)
-    this.r=6
-    this.maxspeed = 4
-    this.maxforce = 0.1
+    this.r=3
+    this.maxspeed = 2
+    this.maxforce = 0.5
 }
 
 Vehicle.prototype.update=function(){
@@ -101,15 +102,17 @@ Vehicle.prototype.draw=function(){
     translate(this.position.x,this.position.y)
   
     rotate( this.velocity.heading() + Math.PI*0.5);
-    beginShape()
-    vertex(0, -this.r*2)
-    vertex(-this.r, this.r*2)
-    vertex(this.r, this.r*2)
-    endShape()
+    
+    ellipse(0, -this.r*2, 20,20)
+    ellipse(-this.r*2, this.r*2, 20,20)
+    ellipse(this.r*2, this.r*2, 20,20)
+    
     pop()
 }
 
 /* end of Vehicle class */
+
+
 
 
 
